@@ -1,4 +1,4 @@
-import { StatusBar, View } from 'react-native'
+import { StatusBar } from 'react-native'
 
 import { Center, GluestackUIProvider, Text } from '@gluestack-ui/themed'
 import { config } from './config/gluestack-ui.config'
