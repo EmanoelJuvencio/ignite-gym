@@ -1,4 +1,7 @@
-import { StatusBar, Text, View } from 'react-native'
+import { StatusBar, View } from 'react-native'
+
+import { Center, GluestackUIProvider, Text } from '@gluestack-ui/themed'
+import { config } from './config/gluestack-ui.config'
 
 import {
   useFonts,
@@ -12,21 +15,17 @@ export default function App() {
   if (!fontsLoaded) {
     return null
   }
+
   return (
-    <View
-      style={{
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#202024',
-      }}
-    >
+    <GluestackUIProvider config={config}>
       <StatusBar
         barStyle='light-content'
         backgroundColor='transparent'
         translucent
       />
-      <Text style={{ fontFamily: 'Roboto_700Bold', fontSize: 30 }}>Home</Text>
-    </View>
+      <Center flex={1} bg='$gray700'>
+        <Text>Home</Text>
+      </Center>
+    </GluestackUIProvider>
   )
 }
