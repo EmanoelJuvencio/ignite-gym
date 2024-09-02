@@ -3,6 +3,8 @@ import { StatusBar } from 'react-native'
 import { Center, GluestackUIProvider, Text } from '@gluestack-ui/themed'
 import { config } from './config/gluestack-ui.config'
 
+import { Loading } from '@components/Loading'
+
 import {
   useFonts,
   Roboto_700Bold,
@@ -12,10 +14,6 @@ import {
 export default function App() {
   const [fontsLoaded] = useFonts({ Roboto_700Bold, Roboto_400Regular })
 
-  if (!fontsLoaded) {
-    return null
-  }
-
   return (
     <GluestackUIProvider config={config}>
       <StatusBar
@@ -23,9 +21,14 @@ export default function App() {
         backgroundColor='transparent'
         translucent
       />
-      <Center flex={1} bg='$gray700'>
-        <Text>Home</Text>
-      </Center>
+
+      {fontsLoaded ? (
+        <Center flex={1} bg='$gray700'>
+          <Text>Home</Text>
+        </Center>
+      ) : (
+        <Loading />
+      )}
     </GluestackUIProvider>
   )
 }
