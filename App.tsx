@@ -10,7 +10,7 @@ import {
   Roboto_700Bold,
   Roboto_400Regular,
 } from '@expo-google-fonts/roboto'
-import { SignIn } from '@screens/SignIn'
+import { SignUp } from '@screens/SignUp'
 
 export default function App() {
   const [fontsLoaded] = useFonts({ Roboto_700Bold, Roboto_400Regular })
@@ -23,7 +23,7 @@ export default function App() {
         translucent
       />
 
-      {fontsLoaded ? <SignIn /> : <Loading />}
+      {fontsLoaded ? <SignUp /> : <Loading />}
     </GluestackUIProvider>
   )
 }
