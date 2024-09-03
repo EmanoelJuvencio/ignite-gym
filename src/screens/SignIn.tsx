@@ -33,7 +33,11 @@ export function SignIn() {
 
         <Center gap={'$2'}>
           <Heading color='$gray100'>Acesse a conta</Heading>
-          <Input placeholder='E-mail' />
+          <Input
+            placeholder='E-mail'
+            keyboardType='email-address'
+            autoCapitalize='none'
+          />
           <Input placeholder='Senha' type='password' />
         </Center>
       </VStack>

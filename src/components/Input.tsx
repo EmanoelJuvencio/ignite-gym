@@ -11,11 +11,16 @@ export function Input({ ...rest }: TInputProps) {
       px='$4'
       borderWidth='$0'
       borderRadius='$md'
+      $focus={{
+        borderWidth: 1,
+        borderColor: '$green500',
+      }}
     >
       <InputField
         color='$white'
         fontFamily='$body'
         placeholderTextColor='$gray300'
+        keyboardAppearance='dark'
         {...rest}
       />
     </GlueStackInput>
