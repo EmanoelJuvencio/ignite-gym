@@ -22,7 +22,12 @@ export function History() {
       },
       {
         title: '25.08.24',
-        data: [{ group: 'Costas', exercise: 'Puxada Frontal', time: '10:30' }],
+        data: [
+          { group: 'Costas', exercise: 'Puxada Frontal', time: '10:30' },
+          { group: 'Costas', exercise: 'Puxada Unilateral', time: '10:45' },
+          { group: 'Costas', exercise: 'Remada Curvada', time: '11:01' },
+          { group: 'Costas', exercise: 'Levantamento Terra', time: '11:22' },
+        ],
       },
     ]
   )
