@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native'
 import {
   Center,
   Image,
@@ -7,6 +8,8 @@ import {
   ScrollView,
 } from '@gluestack-ui/themed'
 
+import { TAuthNavigatorRoutesProps } from '@routes/auth.routes'
+
 import { Input } from '@components/Input'
 import { Button } from '@components/Button'
 
@@ -14,12 +17,18 @@ import BackgroundImg from '@assets/background.png'
 import Logo from '@assets/logo.svg'
 
 export function SignIn() {
+  const navigation = useNavigation<TAuthNavigatorRoutesProps>()
+
+  function handleNewAccount() {
+    navigation.navigate('signUp')
+  }
+
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
       showsVerticalScrollIndicator={false}
     >
-      <VStack flex={1} bg='$gray700'>
+      <VStack flex={1}>
         <Image
           alt='Pessoas treinando'
           w={'$full'}
@@ -53,7 +62,11 @@ export function SignIn() {
             <Text color='$gray100' fontFamily='$body' fontSize={'$sm'}>
               Ainda não tem acesso?
             </Text>
-            <Button title='Criar conta' variant='outline' />
+            <Button
+              title='Criar conta'
+              variant='outline'
+              onPress={handleNewAccount}
+            />
           </Center>
         </VStack>
       </VStack>
