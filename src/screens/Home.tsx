@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { FlatList } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
 import { Heading, HStack, Text, VStack } from '@gluestack-ui/themed'
 
 import { HomeHeader } from '@components/HomeHeader'
 import { Group } from '@components/Group'
 import { ExerciseCard } from '@components/ExerciseCard'
+import { TAppNavigatorRoutesProps } from '@routes/app.routes'
 
 type TExerciseProps = {
   title: string
@@ -35,6 +37,7 @@ export function Home() {
       url: 'https://www.espaco360med.com.br/images/blog/main/large/10-fatos-que-farao-voce-incluir-o-levantamento-terra-no-seu-treino-.jpg',
     },
   ])
+
   const [groups, setGroups] = useState<string[]>([
     'Costas',
     'Bíceps',
@@ -42,7 +45,14 @@ export function Home() {
     'Ombro',
     'Peito',
   ])
+
   const [groupSelected, setGroupSelected] = useState(groups[0])
+
+  const navigation = useNavigation<TAppNavigatorRoutesProps>()
+
+  function handleOpenExerciseDetails() {
+    navigation.navigate('exercise')
+  }
 
   return (
     <VStack flex={1}>
@@ -87,6 +97,7 @@ export function Home() {
               title={item.title}
               description={item.description}
               imageURL={item.url}
+              onPress={handleOpenExerciseDetails}
             />
           )}
           showsVerticalScrollIndicator={false}
