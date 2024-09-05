@@ -33,8 +33,6 @@ export function UserPhoto({ source, ...rest }: TUserPhotoProps) {
       source={verifySource(source) ? source : UserImageDefault}
       rounded='$full'
       borderWidth='$2'
-      w='$16'
-      h='$16'
       backgroundColor='$gray500'
       borderColor='$gray400'
       alt='Imagem do Usuário'

@@ -66,7 +66,7 @@ export function Home() {
           minHeight: 44,
         }}
         horizontal
-        showsHorizontalScrollIndicator
+        showsHorizontalScrollIndicator={false}
       />
 
       <VStack px='$8' flex={1}>
