@@ -1,23 +1,33 @@
-import { useNavigation } from '@react-navigation/native'
 import {
   Center,
-  Image,
-  VStack,
-  Text,
   Heading,
+  Image,
   ScrollView,
+  Text,
+  VStack,
 } from '@gluestack-ui/themed'
+import { useNavigation } from '@react-navigation/native'
+import { useState } from 'react'
 
 import { TAuthNavigatorRoutesProps } from '@routes/auth.routes'
 
-import { Input } from '@components/Input'
 import { Button } from '@components/Button'
+import { Input } from '@components/Input'
 
 import BackgroundImg from '@assets/background.png'
 import Logo from '@assets/logo.svg'
 
 export function SignUp() {
   const navigation = useNavigation<TAuthNavigatorRoutesProps>()
+
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [passwordConfirm, setPasswordConfirm] = useState('')
+
+  function handleSignUp() {
+    console.log({ name, email, password, passwordConfirm })
+  }
 
   function handleBackSignIn() {
     navigation.navigate('signIn')
@@ -48,24 +58,27 @@ export function SignUp() {
 
           <Center flex={1} justifyContent='flex-start' gap={'$4'}>
             <Heading color='$gray100'>Crie sua conta</Heading>
-            <Input placeholder='Nome' />
+            <Input placeholder='Nome' onChangeText={setName} />
             <Input
               placeholder='E-mail'
               keyboardType='email-address'
               autoCapitalize='none'
+              onChangeText={setEmail}
             />
             <Input
               placeholder='Senha'
               secureTextEntry
               textContentType='newPassword'
+              onChangeText={setPassword}
             />
             <Input
               placeholder='Confirme sua senha'
               secureTextEntry
               textContentType='newPassword'
+              onChangeText={setPasswordConfirm}
             />
 
-            <Button title='Criar e acessar' />
+            <Button title='Criar e acessar' onPress={handleSignUp} />
           </Center>
 
           <Button
