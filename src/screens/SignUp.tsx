@@ -6,8 +6,8 @@ import {
   Text,
   VStack,
 } from '@gluestack-ui/themed'
+import { Controller, useForm } from 'react-hook-form'
 import { useNavigation } from '@react-navigation/native'
-import { useState } from 'react'
 
 import { TAuthNavigatorRoutesProps } from '@routes/auth.routes'
 
@@ -16,14 +16,28 @@ import { Input } from '@components/Input'
 
 import BackgroundImg from '@assets/background.png'
 import Logo from '@assets/logo.svg'
-import { Controller, useForm } from 'react-hook-form'
+
+type TFormDataProps = {
+  name: string
+  email: string
+  password: string
+  passwordConfirm: string
+}
 
 export function SignUp() {
   const navigation = useNavigation<TAuthNavigatorRoutesProps>()
 
-  const { control } = useForm()
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<TFormDataProps>({
+    defaultValues: { name: '', email: '', password: '', passwordConfirm: '' },
+  })
 
-  function handleSignUp() {
+  function handleSignUp(formData: TFormDataProps) {
+    console.log(formData)
+
     // TODO Recuperar dados para eventualmente Cadastrar usuario
   }
 
@@ -60,11 +74,15 @@ export function SignUp() {
             <Controller
               control={control}
               name='name'
+              rules={{
+                required: 'Informe seu nome',
+              }}
               render={({ field: { onChange, value } }) => (
                 <Input
                   placeholder='Nome'
                   onChangeText={onChange}
                   value={value}
+                  errorMessage={errors.name?.message}
                 />
               )}
             />
@@ -72,6 +90,13 @@ export function SignUp() {
             <Controller
               control={control}
               name='email'
+              rules={{
+                required: 'Infome o E-mail',
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: 'E-mail inválido',
+                },
+              }}
               render={({ field: { onChange, value } }) => (
                 <Input
                   placeholder='E-mail'
@@ -79,6 +104,7 @@ export function SignUp() {
                   autoCapitalize='none'
                   onChangeText={onChange}
                   value={value}
+                  errorMessage={errors.email?.message}
                 />
               )}
             />
@@ -111,7 +137,10 @@ export function SignUp() {
               )}
             />
 
-            <Button title='Criar e acessar' onPress={handleSignUp} />
+            <Button
+              title='Criar e acessar'
+              onPress={handleSubmit(handleSignUp)}
+            />
           </Center>
 
           <Button
