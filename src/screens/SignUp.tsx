@@ -8,6 +8,8 @@ import {
 } from '@gluestack-ui/themed'
 import { Controller, useForm } from 'react-hook-form'
 import { useNavigation } from '@react-navigation/native'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as yup from 'yup'
 
 import { TAuthNavigatorRoutesProps } from '@routes/auth.routes'
 
@@ -24,6 +26,21 @@ type TFormDataProps = {
   passwordConfirm: string
 }
 
+const signUpSchema = yup.object({
+  name: yup.string().required('Informe seu nome.'),
+  email: yup.string().required('Informe o E-mail.').email('E-mail Invalido.'),
+  password: yup
+    .string()
+    .required('Informe a Senha.')
+    .min(6, 'A senha deve ter no minimo 6 digitos.'),
+  passwordConfirm: yup
+    .string()
+    .required('Confirme a senha.')
+    .oneOf([yup.ref('password')], 'A confirmação da senha não confere.'),
+})
+
+// type TFormDataProps = yup.InferType<typeof signUpSchema>
+
 export function SignUp() {
   const navigation = useNavigation<TAuthNavigatorRoutesProps>()
 
@@ -33,12 +50,11 @@ export function SignUp() {
     formState: { errors },
   } = useForm<TFormDataProps>({
     defaultValues: { name: '', email: '', password: '', passwordConfirm: '' },
+    resolver: yupResolver(signUpSchema),
   })
 
   function handleSignUp(formData: TFormDataProps) {
     console.log(formData)
-
-    // TODO Recuperar dados para eventualmente Cadastrar usuario
   }
 
   function handleBackSignIn() {
@@ -74,9 +90,6 @@ export function SignUp() {
             <Controller
               control={control}
               name='name'
-              rules={{
-                required: 'Informe seu nome',
-              }}
               render={({ field: { onChange, value } }) => (
                 <Input
                   placeholder='Nome'
@@ -90,13 +103,6 @@ export function SignUp() {
             <Controller
               control={control}
               name='email'
-              rules={{
-                required: 'Infome o E-mail',
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: 'E-mail inválido',
-                },
-              }}
               render={({ field: { onChange, value } }) => (
                 <Input
                   placeholder='E-mail'
@@ -119,6 +125,7 @@ export function SignUp() {
                   textContentType='newPassword'
                   onChangeText={onChange}
                   value={value}
+                  errorMessage={errors.password?.message}
                 />
               )}
             />
@@ -132,7 +139,8 @@ export function SignUp() {
                   secureTextEntry
                   textContentType='newPassword'
                   onChangeText={onChange}
-                  value={value}
+                  value={value as string}
+                  errorMessage={errors.passwordConfirm?.message}
                 />
               )}
             />
