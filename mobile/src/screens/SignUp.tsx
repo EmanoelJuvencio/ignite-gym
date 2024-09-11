@@ -39,8 +39,6 @@ const signUpSchema = yup.object({
     .oneOf([yup.ref('password')], 'A confirmação da senha não confere.'),
 })
 
-// type TFormDataProps = yup.InferType<typeof signUpSchema>
-
 export function SignUp() {
   const navigation = useNavigation<TAuthNavigatorRoutesProps>()
 
@@ -53,8 +51,15 @@ export function SignUp() {
     resolver: yupResolver(signUpSchema),
   })
 
-  function handleSignUp(formData: TFormDataProps) {
-    console.log(formData)
+  function handleSignUp({ name, email, password }: TFormDataProps) {
+    fetch('http://172.16.81.90:3333/users', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name, email, password }),
+    })
   }
 
   function handleBackSignIn() {
