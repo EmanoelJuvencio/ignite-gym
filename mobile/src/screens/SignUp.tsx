@@ -18,6 +18,7 @@ import { Input } from '@components/Input'
 
 import BackgroundImg from '@assets/background.png'
 import Logo from '@assets/logo.svg'
+import { api } from '@services/api'
 
 type TFormDataProps = {
   name: string
@@ -52,18 +53,19 @@ export function SignUp() {
   })
 
   async function handleSignUp({ name, email, password }: TFormDataProps) {
-    const response = await fetch('http://172.16.81.90:3333/users', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ name, email, password }),
-    })
+    // const response = await fetch('http://172.16.81.90:3333/users', {
+    //   method: 'POST',
+    //   headers: {
+    //     Accept: 'application/json',
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify({ name, email, password }),
+    // })
+    // const data = await response.json()
+    // console.log(data)
 
-    const data = await response.json()
-
-    console.log(data)
+    const response = await api.post('/users', { name, email, password })
+    console.log(response.data)
   }
 
   function handleBackSignIn() {
