@@ -1,3 +1,10 @@
 import { createContext } from 'react'
+import { TUserDTO } from '@dtos/UserDTO'
 
-export const AuthContext = createContext({})
+export type TAuthContextDataProps = {
+  user: TUserDTO
+}
+
+export const AuthContext = createContext<TAuthContextDataProps>(
+  {} as TAuthContextDataProps
+)
