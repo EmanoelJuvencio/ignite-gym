@@ -28,11 +28,11 @@ export function ToastMessage({
       nativeID={`toast-${id}`}
       action={action}
       bg={action === 'success' ? '$green500' : '$red500'}
-      mt='$10'
       flexDirection='column'
     >
       <Box
         flexDirection='row'
+        w='$full'
         gap={10}
         justifyContent='space-between'
         alignItems='center'
