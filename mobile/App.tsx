@@ -10,7 +10,7 @@ import {
   Roboto_700Bold,
   Roboto_400Regular,
 } from '@expo-google-fonts/roboto'
-import { AuthContext } from '@contexts/AuthContext'
+import { AuthContextProvider } from '@contexts/AuthContext'
 
 export default function App() {
   const [fontsLoaded] = useFonts({ Roboto_700Bold, Roboto_400Regular })
@@ -22,19 +22,9 @@ export default function App() {
         backgroundColor='transparent'
         translucent
       />
-
-      <AuthContext.Provider
-        value={{
-          user: {
-            id: '1',
-            name: 'Emanoel',
-            email: 'emanoeljuvencio@gmail.com',
-            avatar: 'emanoel.png',
-          },
-        }}
-      >
+      <AuthContextProvider>
         {fontsLoaded ? <Routes /> : <Loading />}
-      </AuthContext.Provider>
+      </AuthContextProvider>
     </GluestackUIProvider>
   )
 }
