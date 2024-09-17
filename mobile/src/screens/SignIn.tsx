@@ -14,6 +14,7 @@ import {
 
 import { TAuthNavigatorRoutesProps } from '@routes/auth.routes'
 
+import { useAuth } from '@hooks/useAuth'
 import { AppError } from '@utils/AppError'
 
 import { Input } from '@components/Input'
@@ -30,7 +31,8 @@ type TFormDataProps = {
 
 export function SignIn() {
   const navigation = useNavigation<TAuthNavigatorRoutesProps>()
-  const toast = useToast()
+
+  const { signIn } = useAuth()
 
   const signInSchema = yup.object({
     email: yup.string().required('Informe o E-mail.').email('E-mail Invalido.'),
@@ -47,27 +49,7 @@ export function SignIn() {
   })
 
   async function handleSignIn({ email, password }: TFormDataProps) {
-    try {
-      //  TODO implementar Login
-      console.log({ email, password })
-    } catch (error) {
-      const errorMessage =
-        error instanceof AppError
-          ? error.message
-          : 'Não foi possível criar conta, tente novamente mais tarde.'
-      return toast.show({
-        placement: 'top',
-        render: ({ id }) => (
-          <ToastMessage
-            id={id}
-            action='error'
-            title='Erro ao cadastrar conta'
-            description={errorMessage}
-            onClose={() => toast.close(id)}
-          />
-        ),
-      })
-    }
+    await signIn(email, password)
   }
 
   function handleNewAccount() {
