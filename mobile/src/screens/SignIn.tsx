@@ -1,3 +1,6 @@
+import { Controller, useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as yup from 'yup'
 import { useNavigation } from '@react-navigation/native'
 import {
   Center,
@@ -6,18 +9,66 @@ import {
   Text,
   Heading,
   ScrollView,
+  useToast,
 } from '@gluestack-ui/themed'
 
 import { TAuthNavigatorRoutesProps } from '@routes/auth.routes'
 
+import { AppError } from '@utils/AppError'
+
 import { Input } from '@components/Input'
 import { Button } from '@components/Button'
+import { ToastMessage } from '@components/ToastMessage'
 
 import BackgroundImg from '@assets/background.png'
 import Logo from '@assets/logo.svg'
 
+type TFormDataProps = {
+  email: string
+  password: string
+}
+
 export function SignIn() {
   const navigation = useNavigation<TAuthNavigatorRoutesProps>()
+  const toast = useToast()
+
+  const signInSchema = yup.object({
+    email: yup.string().required('Informe o E-mail.').email('E-mail Invalido.'),
+    password: yup.string().required('Informe a Senha.'),
+  })
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<TFormDataProps>({
+    defaultValues: { email: '', password: '' },
+    resolver: yupResolver(signInSchema),
+  })
+
+  async function handleSignIn({ email, password }: TFormDataProps) {
+    try {
+      //  TODO implementar Login
+      console.log({ email, password })
+    } catch (error) {
+      const errorMessage =
+        error instanceof AppError
+          ? error.message
+          : 'Não foi possível criar conta, tente novamente mais tarde.'
+      return toast.show({
+        placement: 'top',
+        render: ({ id }) => (
+          <ToastMessage
+            id={id}
+            action='error'
+            title='Erro ao cadastrar conta'
+            description={errorMessage}
+            onClose={() => toast.close(id)}
+          />
+        ),
+      })
+    }
+  }
 
   function handleNewAccount() {
     navigation.navigate('signUp')
@@ -48,14 +99,38 @@ export function SignIn() {
 
           <Center gap={'$4'}>
             <Heading color='$gray100'>Acesse a conta</Heading>
-            <Input
-              placeholder='E-mail'
-              keyboardType='email-address'
-              autoCapitalize='none'
-            />
-            <Input placeholder='Senha' type='password' />
 
-            <Button title='Acessar' />
+            <Controller
+              control={control}
+              name='email'
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder='E-mail'
+                  keyboardType='email-address'
+                  autoCapitalize='none'
+                  onChangeText={onChange}
+                  value={value}
+                  errorMessage={errors.email?.message}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name='password'
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder='Senha'
+                  secureTextEntry
+                  textContentType='password'
+                  onChangeText={onChange}
+                  value={value}
+                  errorMessage={errors.password?.message}
+                />
+              )}
+            />
+
+            <Button title='Acessar' onPress={handleSubmit(handleSignIn)} />
           </Center>
 
           <Center flex={1} justifyContent='flex-end' gap={'$3'}>
