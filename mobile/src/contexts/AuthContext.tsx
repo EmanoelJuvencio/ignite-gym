@@ -7,6 +7,7 @@ import { api } from '@services/api'
 export type TAuthContextDataProps = {
   user: TUserDTO
   signIn: (email: string, password: string) => Promise<void>
+  signOut: () => void
 }
 
 type TAuthContextProviderProps = {
@@ -31,11 +32,16 @@ export function AuthContextProvider({ children }: TAuthContextProviderProps) {
     }
   }
 
+  function signOut() {
+    setUser({} as TUserDTO)
+  }
+
   return (
     <AuthContext.Provider
       value={{
         user,
         signIn,
+        signOut,
       }}
     >
       {children}

@@ -2,8 +2,16 @@ import { Heading, HStack, Icon, Text, VStack } from '@gluestack-ui/themed'
 
 import { LogOut } from 'lucide-react-native'
 import { UserPhoto } from './UserPhoto'
+import { TouchableOpacity } from 'react-native'
+import { useAuth } from '@hooks/useAuth'
 
 export function HomeHeader() {
+  const { signOut } = useAuth()
+
+  function handleSignOut() {
+    signOut()
+  }
+
   return (
     <HStack
       pt={'$16'}
@@ -22,7 +30,9 @@ export function HomeHeader() {
           Emanoel
         </Heading>
       </VStack>
-      <Icon as={LogOut} color='$gray200' size='xl' />
+      <TouchableOpacity onPress={handleSignOut}>
+        <Icon as={LogOut} color='$gray200' size='xl' />
+      </TouchableOpacity>
     </HStack>
   )
 }
