@@ -5,7 +5,7 @@ import { gluestackUIConfig } from '../../config/gluestack-ui.config'
 import { useAuth } from '@hooks/useAuth'
 
 import { AuthRoutes } from './auth.routes'
-// import { AppRoutes } from './app.routes'
+import { AppRoutes } from './app.routes'
 
 export function Routes() {
   const theme = DefaultTheme
@@ -13,13 +13,10 @@ export function Routes() {
 
   const { user } = useAuth()
 
-  console.log('User vindo do hook useAuth ==>', user)
-
   return (
     <Box flex={1} bg='$gray700'>
       <NavigationContainer theme={theme}>
-        <AuthRoutes />
-        {/* <AppRoutes /> */}
+        {user.id ? <AppRoutes /> : <AuthRoutes />}
       </NavigationContainer>
     </Box>
   )

@@ -23,6 +23,7 @@ import { ToastMessage } from '@components/ToastMessage'
 
 import BackgroundImg from '@assets/background.png'
 import Logo from '@assets/logo.svg'
+import { useState } from 'react'
 
 type TFormDataProps = {
   email: string
@@ -31,8 +32,9 @@ type TFormDataProps = {
 
 export function SignIn() {
   const navigation = useNavigation<TAuthNavigatorRoutesProps>()
-
+  const toast = useToast()
   const { signIn } = useAuth()
+  const [isLoading, setIsLoading] = useState(false)
 
   const signInSchema = yup.object({
     email: yup.string().required('Informe o E-mail.').email('E-mail Invalido.'),
@@ -49,7 +51,28 @@ export function SignIn() {
   })
 
   async function handleSignIn({ email, password }: TFormDataProps) {
-    await signIn(email, password)
+    try {
+      setIsLoading(true)
+      await signIn(email, password)
+    } catch (error) {
+      setIsLoading(false)
+      const errorMessage =
+        error instanceof AppError
+          ? error.message
+          : 'Não foi possível acessar conta, tente novamente mais tarde.'
+      return toast.show({
+        placement: 'top',
+        render: ({ id }) => (
+          <ToastMessage
+            id={id}
+            action='error'
+            title='Erro ao acessar conta'
+            description={errorMessage}
+            onClose={() => toast.close(id)}
+          />
+        ),
+      })
+    }
   }
 
   function handleNewAccount() {
@@ -112,7 +135,11 @@ export function SignIn() {
               )}
             />
 
-            <Button title='Acessar' onPress={handleSubmit(handleSignIn)} />
+            <Button
+              title='Acessar'
+              isLoading={isLoading}
+              onPress={handleSubmit(handleSignIn)}
+            />
           </Center>
 
           <Center flex={1} justifyContent='flex-end' gap={'$3'}>
