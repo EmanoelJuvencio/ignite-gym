@@ -6,7 +6,7 @@ import { TouchableOpacity } from 'react-native'
 import { useAuth } from '@hooks/useAuth'
 
 export function HomeHeader() {
-  const { signOut } = useAuth()
+  const { user, signOut } = useAuth()
 
   function handleSignOut() {
     signOut()
@@ -21,13 +21,13 @@ export function HomeHeader() {
       alignItems='center'
       gap='$4'
     >
-      <UserPhoto source={{ uri: 'https://github.com/emanoeljuvencio.png' }} />
+      <UserPhoto source={{ uri: user.avatar }} />
       <VStack flex={1}>
         <Text color='$gray100' fontSize={'$sm'}>
           Olá,
         </Text>
         <Heading color='$gray100' fontSize={'$md'}>
-          Emanoel
+          {user.name}
         </Heading>
       </VStack>
       <TouchableOpacity onPress={handleSignOut}>
