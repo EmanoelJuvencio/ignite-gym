@@ -13,11 +13,8 @@ export function Routes() {
   theme.colors.background = gluestackUIConfig.tokens.colors.gray700
 
   const { user, isLoadingUserStorageData } = useAuth()
-  console.log(isLoadingUserStorageData)
 
   if (isLoadingUserStorageData) {
-    console.log('hiihhi')
-
     return <Loading />
   }
   return (

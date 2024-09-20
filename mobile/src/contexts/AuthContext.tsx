@@ -53,9 +53,16 @@ export function AuthContextProvider({ children }: TAuthContextProviderProps) {
     }
   }
 
-  function signOut() {
-    setUser({} as TUserDTO)
-    storageUserClear()
+  async function signOut() {
+    try {
+      setIsLoadingUserStorageData(true)
+      await storageUserClear()
+      setUser({} as TUserDTO)
+    } catch (error) {
+      throw error
+    } finally {
+      setIsLoadingUserStorageData(false)
+    }
   }
 
   useEffect(() => {
