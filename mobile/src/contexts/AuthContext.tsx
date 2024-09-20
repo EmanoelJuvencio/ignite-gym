@@ -9,7 +9,7 @@ import {
   storageUserSafe,
 } from '@storage/StorageUser'
 
-export type TAuthContextDataProps = {
+export type TAuthContextProps = {
   user: TUserDTO
   isLoadingUserStorageData: boolean
   signIn: (email: string, password: string) => Promise<void>
@@ -20,8 +20,8 @@ type TAuthContextProviderProps = {
   children: ReactNode
 }
 
-export const AuthContext = createContext<TAuthContextDataProps>(
-  {} as TAuthContextDataProps
+export const AuthContext = createContext<TAuthContextProps>(
+  {} as TAuthContextProps
 )
 
 export function AuthContextProvider({ children }: TAuthContextProviderProps) {
