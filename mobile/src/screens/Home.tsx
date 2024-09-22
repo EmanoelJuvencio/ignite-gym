@@ -1,6 +1,6 @@
 import { Heading, HStack, Text, useToast, VStack } from '@gluestack-ui/themed'
-import { useNavigation } from '@react-navigation/native'
-import { useEffect, useState } from 'react'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
+import { useCallback, useEffect, useState } from 'react'
 import { FlatList } from 'react-native'
 
 import { ExerciseCard } from '@components/ExerciseCard'
@@ -10,45 +10,18 @@ import { ToastMessage } from '@components/ToastMessage'
 
 import { TAppNavigatorRoutesProps } from '@routes/app.routes'
 
+import { Loading } from '@components/Loading'
+import { TExerciseDTO } from '@dtos/ExerciseDTO'
 import { api } from '@services/api'
 import { AppError } from '@utils/AppError'
 
-type TExerciseProps = {
-  title: string
-  description: string
-  url: string
-}
-
 export function Home() {
-  const [exercises, setExercises] = useState<TExerciseProps[]>([
-    {
-      title: 'Puxada Frontal',
-      description: '3 Séries x 12 Repetições',
-      url: 'https://istil.com.br/_upload/2024/04/26/treino-de-costas-confira-os-melhores-exercicios-para-fazer-na-academia-662c10cfdc18c.jpg',
-    },
-    {
-      title: 'Remada Curvada',
-      description: '2 Séries x 15 Repetições',
-      url: 'https://p2.trrsf.com/image/fget/cf/774/0/images.terra.com/2023/05/05/1301740817-remada-curvada.jpg',
-    },
-    {
-      title: 'Remada Unilateral',
-      description: '4 Séries x 10 Repetições',
-      url: 'https://www.feitodeiridium.com.br/wp-content/uploads/2016/07/remada-unilateral-2.jpg',
-    },
-    {
-      title: 'Levantamento Terra',
-      description: '3 Séries x 15 Repetições',
-      url: 'https://www.espaco360med.com.br/images/blog/main/large/10-fatos-que-farao-voce-incluir-o-levantamento-terra-no-seu-treino-.jpg',
-    },
-  ])
+  const [exercises, setExercises] = useState<TExerciseDTO[]>([])
+  const [groups, setGroups] = useState<string[]>([])
+  const [groupSelected, setGroupSelected] = useState<string>()
+  const [isLoading, setIsLoading] = useState(true)
 
   const toast = useToast()
-
-  const [groups, setGroups] = useState<string[]>([])
-
-  const [groupSelected, setGroupSelected] = useState(groups[0])
-
   const navigation = useNavigation<TAppNavigatorRoutesProps>()
 
   function handleOpenExerciseDetails() {
@@ -57,32 +30,60 @@ export function Home() {
 
   async function fetchGroups() {
     try {
+      setIsLoading(true)
       const response = await api.get('/groups')
       setGroups(response.data)
+      setGroupSelected(response.data[0])
     } catch (error) {
-      const isAppError = error instanceof AppError
-      const errorMessage = isAppError
-        ? error.message
-        : 'Não foi possivel carregar os grupos musculares.'
-
-      toast.show({
-        placement: 'top',
-        render: ({ id }) => (
-          <ToastMessage
-            id={id}
-            action='error'
-            title='Erro ao buscar grupos musculares'
-            description={errorMessage}
-            onClose={() => toast.close(id)}
-          />
-        ),
-      })
+      toastErrorHandler(
+        error,
+        'Não foi possível carregar os grupos musculares.'
+      )
     }
+  }
+
+  async function fetchExcercisesByGroup() {
+    try {
+      setIsLoading(true)
+      const response = await api.get(`/exercises/bygroup/${groupSelected}`)
+      setExercises(response.data)
+    } catch (error) {
+      toastErrorHandler(error, 'Não foi possível carregar os exercícios.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  function toastErrorHandler(
+    error: unknown,
+    genericMessageError = 'Houve uma falha aos buscar as informações tente novamente mais tarde.'
+  ) {
+    const isAppError = error instanceof AppError
+    const errorMessage = isAppError ? error.message : genericMessageError
+
+    toast.show({
+      placement: 'top',
+      render: ({ id }) => (
+        <ToastMessage
+          id={id}
+          action='error'
+          title='Erro ao buscar dados'
+          description={errorMessage}
+          onClose={() => toast.close(id)}
+        />
+      ),
+    })
   }
 
   useEffect(() => {
     fetchGroups()
   }, [])
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchExcercisesByGroup()
+    }, [groupSelected])
+  )
 
   return (
     <VStack flex={1}>
@@ -109,31 +110,30 @@ export function Home() {
         showsHorizontalScrollIndicator={false}
       />
 
-      <VStack px='$8' flex={1}>
-        <HStack mb='$5' justifyContent='space-between' alignItems='center'>
-          <Heading color='$gray200' fontSize='$md' fontFamily='$heading'>
-            Exercicíos
-          </Heading>
-          <Text color='$gray200' fontSize='$sm' fontFamily='$body'>
-            {exercises.length}
-          </Text>
-        </HStack>
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <VStack px='$8' flex={1}>
+          <HStack mb='$5' justifyContent='space-between' alignItems='center'>
+            <Heading color='$gray200' fontSize='$md' fontFamily='$heading'>
+              Exercicíos
+            </Heading>
+            <Text color='$gray200' fontSize='$sm' fontFamily='$body'>
+              {exercises.length}
+            </Text>
+          </HStack>
 
-        <FlatList
-          keyExtractor={(item) => item.title}
-          data={exercises}
-          renderItem={({ item }) => (
-            <ExerciseCard
-              title={item.title}
-              description={item.description}
-              imageURL={item.url}
-              onPress={handleOpenExerciseDetails}
-            />
-          )}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 120 }}
-        />
-      </VStack>
+          <FlatList
+            keyExtractor={(item) => item.id.toString()}
+            data={exercises}
+            renderItem={({ item }) => (
+              <ExerciseCard data={item} onPress={handleOpenExerciseDetails} />
+            )}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 120 }}
+          />
+        </VStack>
+      )}
     </VStack>
   )
 }
