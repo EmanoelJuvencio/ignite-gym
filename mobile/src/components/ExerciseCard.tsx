@@ -1,27 +1,23 @@
-import { TouchableOpacity, TouchableOpacityProps } from 'react-native'
 import {
   Heading,
   HStack,
+  Icon,
   Image,
   Text,
   VStack,
-  Icon,
 } from '@gluestack-ui/themed'
+import { TouchableOpacity, TouchableOpacityProps } from 'react-native'
 
+import { TExerciseDTO } from '@dtos/ExerciseDTO'
+import { api } from '@services/api'
 import { ChevronRight } from 'lucide-react-native'
 
 type TExerciseCardProps = TouchableOpacityProps & {
-  imageURL?: string
-  title: string
-  description: string
+  data: TExerciseDTO
 }
 
-export function ExerciseCard({
-  title,
-  description,
-  imageURL = '',
-  ...rest
-}: TExerciseCardProps) {
+export function ExerciseCard({ data, ...rest }: TExerciseCardProps) {
+  const { name, series, repetitions, thumb, demo } = data
   return (
     <TouchableOpacity {...rest}>
       <HStack
@@ -41,13 +37,13 @@ export function ExerciseCard({
           bg='$gray600'
           resizeMode='cover'
           source={{
-            uri: imageURL,
+            uri: `${api.defaults.baseURL}/exercise/thumb/${thumb}`,
           }}
         />
 
         <VStack flex={1}>
           <Heading color='$white' fontSize='$lg' fontFamily='$heading'>
-            {title}
+            {name}
           </Heading>
           <Text
             color='$gray200'
@@ -56,7 +52,7 @@ export function ExerciseCard({
             numberOfLines={2}
             fontFamily='$body'
           >
-            {description}
+            {`${series} Series x ${repetitions} repetições`}
           </Text>
         </VStack>
 
