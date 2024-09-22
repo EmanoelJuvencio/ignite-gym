@@ -1,12 +1,17 @@
-import { useState } from 'react'
-import { FlatList } from 'react-native'
+import { Heading, HStack, Text, useToast, VStack } from '@gluestack-ui/themed'
 import { useNavigation } from '@react-navigation/native'
-import { Heading, HStack, Text, VStack } from '@gluestack-ui/themed'
+import { useEffect, useState } from 'react'
+import { FlatList } from 'react-native'
 
-import { HomeHeader } from '@components/HomeHeader'
-import { Group } from '@components/Group'
 import { ExerciseCard } from '@components/ExerciseCard'
+import { Group } from '@components/Group'
+import { HomeHeader } from '@components/HomeHeader'
+import { ToastMessage } from '@components/ToastMessage'
+
 import { TAppNavigatorRoutesProps } from '@routes/app.routes'
+
+import { api } from '@services/api'
+import { AppError } from '@utils/AppError'
 
 type TExerciseProps = {
   title: string
@@ -38,13 +43,9 @@ export function Home() {
     },
   ])
 
-  const [groups, setGroups] = useState<string[]>([
-    'Costas',
-    'Bíceps',
-    'Tríceps',
-    'Ombro',
-    'Peito',
-  ])
+  const toast = useToast()
+
+  const [groups, setGroups] = useState<string[]>([])
 
   const [groupSelected, setGroupSelected] = useState(groups[0])
 
@@ -53,6 +54,35 @@ export function Home() {
   function handleOpenExerciseDetails() {
     navigation.navigate('exercise')
   }
+
+  async function fetchGroups() {
+    try {
+      const response = await api.get('/groups')
+      setGroups(response.data)
+    } catch (error) {
+      const isAppError = error instanceof AppError
+      const errorMessage = isAppError
+        ? error.message
+        : 'Não foi possivel carregar os grupos musculares.'
+
+      toast.show({
+        placement: 'top',
+        render: ({ id }) => (
+          <ToastMessage
+            id={id}
+            action='error'
+            title='Erro ao buscar grupos musculares'
+            description={errorMessage}
+            onClose={() => toast.close(id)}
+          />
+        ),
+      })
+    }
+  }
+
+  useEffect(() => {
+    fetchGroups()
+  }, [])
 
   return (
     <VStack flex={1}>
