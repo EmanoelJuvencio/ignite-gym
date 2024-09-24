@@ -8,7 +8,7 @@ import {
   Text,
   VStack,
 } from '@gluestack-ui/themed'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 import { ArrowLeft } from 'lucide-react-native'
 
 import { Button } from '@components/Button'
@@ -19,8 +19,19 @@ import RepetitionSVG from '@assets/repetitions.svg'
 
 import { TAppNavigatorRoutesProps } from '@routes/app.routes'
 
+type TRouteParamsProps = {
+  exerciseId: string
+}
+
 export function Excercise() {
   const navigation = useNavigation<TAppNavigatorRoutesProps>()
+
+  const route = useRoute()
+
+  const { exerciseId } = route.params as TRouteParamsProps
+
+  console.log('ID => ', exerciseId)
+
   function handleGoBack() {
     navigation.goBack()
   }

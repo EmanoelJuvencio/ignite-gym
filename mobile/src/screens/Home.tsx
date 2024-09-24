@@ -24,8 +24,8 @@ export function Home() {
   const toast = useToast()
   const navigation = useNavigation<TAppNavigatorRoutesProps>()
 
-  function handleOpenExerciseDetails() {
-    navigation.navigate('exercise')
+  function handleOpenExerciseDetails(id: string) {
+    navigation.navigate('exercise', { exerciseId: id })
   }
 
   async function fetchGroups() {
@@ -127,7 +127,10 @@ export function Home() {
             keyExtractor={(item) => item.id.toString()}
             data={exercises}
             renderItem={({ item }) => (
-              <ExerciseCard data={item} onPress={handleOpenExerciseDetails} />
+              <ExerciseCard
+                data={item}
+                onPress={() => handleOpenExerciseDetails(item.id.toString())}
+              />
             )}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 120 }}
