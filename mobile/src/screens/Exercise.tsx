@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { ScrollView, TouchableOpacity } from 'react-native'
 import {
   Box,
@@ -6,28 +7,33 @@ import {
   Icon,
   Image,
   Text,
+  useToast,
   VStack,
 } from '@gluestack-ui/themed'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import { ArrowLeft } from 'lucide-react-native'
 
+import { ToastMessage } from '@components/ToastMessage'
 import { Button } from '@components/Button'
 
 import BodySVG from '@assets/body.svg'
 import SeriesSVG from '@assets/series.svg'
 import RepetitionSVG from '@assets/repetitions.svg'
 
+import { api } from '@services/api'
+import { AppError } from '@utils/AppError'
 import { TAppNavigatorRoutesProps } from '@routes/app.routes'
+import { TExerciseDTO } from '@dtos/ExerciseDTO'
 
 type TRouteParamsProps = {
   exerciseId: string
 }
 
 export function Excercise() {
+  const [exercise, setExercise] = useState<TExerciseDTO>({} as TExerciseDTO)
   const navigation = useNavigation<TAppNavigatorRoutesProps>()
-
+  const toast = useToast()
   const route = useRoute()
-
   const { exerciseId } = route.params as TRouteParamsProps
 
   console.log('ID => ', exerciseId)
@@ -35,6 +41,35 @@ export function Excercise() {
   function handleGoBack() {
     navigation.goBack()
   }
+
+  async function fetchExerciseDetails() {
+    try {
+      const response = await api.get(`/exercises/${exerciseId}`)
+      setExercise(response.data)
+    } catch (error) {
+      const isAppError = error instanceof AppError
+      const errorMessage = isAppError
+        ? error.message
+        : 'Não foi possivel carregar os detalhes do exercício.'
+
+      toast.show({
+        placement: 'top',
+        render: ({ id }) => (
+          <ToastMessage
+            id={id}
+            action='error'
+            title='Erro ao buscar dados'
+            description={errorMessage}
+            onClose={() => toast.close(id)}
+          />
+        ),
+      })
+    }
+  }
+
+  useEffect(() => {
+    fetchExerciseDetails()
+  }, [exerciseId])
   return (
     <VStack flex={1}>
       <VStack px='$8' pt='$12' bg='$gray600'>
@@ -53,12 +88,12 @@ export function Excercise() {
             fontSize='$lg'
             flexShrink={1}
           >
-            Puxada Frontal
+            {exercise.name}
           </Heading>
           <HStack alignItems='center' gap={2}>
             <BodySVG />
             <Text color='$gray200' textTransform='capitalize'>
-              Costas
+              {exercise.group}
             </Text>
           </HStack>
         </HStack>
@@ -69,28 +104,28 @@ export function Excercise() {
         contentContainerStyle={{ paddingBottom: 32 }}
       >
         <VStack p='$8'>
-          <Image
-            source={{
-              uri: 'https://istil.com.br/_upload/2024/04/26/treino-de-costas-confira-os-melhores-exercicios-para-fazer-na-academia-662c10cfdc18c.jpg',
-            }}
-            alt='Exercício'
-            mb='$3'
-            resizeMode='cover'
-            rounded='$lg'
-            w='$full'
-            h='$80'
-          />
+          <Box mb='$3' rounded='$lg' overflow='hidden'>
+            <Image
+              source={{
+                uri: `${api.defaults.baseURL}/exercise/demo/${exercise.demo}`,
+              }}
+              alt='Exercício'
+              resizeMode='cover'
+              w='$full'
+              h={520}
+            />
+          </Box>
 
           <Box bg='$gray600' rounded='$md' pb='$4' px='$4'>
             <HStack justifyContent='space-between' p='$6'>
               <HStack gap='$2' alignItems='center'>
                 <SeriesSVG />
-                <Text color='$gray200'>3 Séries</Text>
+                <Text color='$gray200'>{exercise.series} Séries</Text>
               </HStack>
 
               <HStack gap='$2' alignItems='center'>
                 <RepetitionSVG />
-                <Text color='$gray200'>12 Repetições</Text>
+                <Text color='$gray200'>{exercise.repetitions} Repetições</Text>
               </HStack>
             </HStack>
             <Button title='Marcar como realizado' />
